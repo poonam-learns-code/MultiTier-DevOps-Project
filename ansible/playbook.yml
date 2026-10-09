@@ -1,0 +1,8 @@
+---
+- name: Setup Jenkins, Docker and Kubernetes
+  hosts: jenkins_server
+  become: yes
+  tasks:
+    - name: Update apt repository
+      apt:
+        update_cache: yes
