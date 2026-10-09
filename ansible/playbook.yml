@@ -6,7 +6,7 @@
   tasks:
     - name: Nuke all old Jenkins lists to stop cache errors
       shell: rm -f /etc/apt/sources.list.d/jenkins*.list /etc/apt/sources.list.d/archive_uri*.list
-      warn: false
+      ignore_errors: yes
 
     - name: Install Java
       apt:
