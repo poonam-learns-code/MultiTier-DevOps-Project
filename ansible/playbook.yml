@@ -1,34 +1,20 @@
 ---
-- name: Setup Jenkins and Docker
+- name: Fix Jenkins Startup and Complete Setup
   hosts: localhost
   connection: local
   become: yes
   tasks:
-    - name: Nuke all old Jenkins lists to stop cache errors
-      shell: rm -f /etc/apt/sources.list.d/jenkins*.list /etc/apt/sources.list.d/archive_uri*.list
-      ignore_errors: yes
-
-    - name: Install Java
+    - name: Install required fontconfig for Jenkins
       apt:
-        name: openjdk-17-jre
-        update_cache: yes
+        name: fontconfig
         state: present
-
-    - name: Add Jenkins Repo with Trusted Bypass
-      shell: echo "deb [trusted=yes] https://pkg.jenkins.io/debian-stable binary/" > /etc/apt/sources.list.d/jenkins.list
-
-    - name: Install Jenkins and Docker
-      apt:
-        pkg:
-          - jenkins
-          - docker.io
         update_cache: yes
-        state: present
 
-    - name: Start Jenkins Service
+    - name: Restart and Enable Jenkins
       systemd:
         name: jenkins
-        state: started
+        state: restarted
+        daemon_reload: yes
         enabled: yes
 
     - name: Start Docker Service
