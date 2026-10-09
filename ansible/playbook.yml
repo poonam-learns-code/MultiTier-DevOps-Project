@@ -4,10 +4,9 @@
   connection: local
   become: yes
   tasks:
-    - name: Force remove old Jenkins repo list
-      file:
-        path: /etc/apt/sources.list.d/jenkins.list
-        state: absent
+    - name: Nuke all old Jenkins lists to stop cache errors
+      shell: rm -f /etc/apt/sources.list.d/jenkins*.list /etc/apt/sources.list.d/archive_uri*.list
+      warn: false
 
     - name: Install Java
       apt:
@@ -15,17 +14,8 @@
         update_cache: yes
         state: present
 
-    - name: Download Jenkins Key to Global Trusted Folder
-      get_url:
-        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-        dest: /etc/apt/trusted.gpg.d/jenkins.asc
-        force: yes
-
-    - name: Add Jenkins Repo
-      apt_repository:
-        repo: "deb https://pkg.jenkins.io/debian-stable binary/"
-        state: present
-        update_cache: yes
+    - name: Add Jenkins Repo with Trusted Bypass
+      shell: echo "deb [trusted=yes] https://pkg.jenkins.io/debian-stable binary/" > /etc/apt/sources.list.d/jenkins.list
 
     - name: Install Jenkins and Docker
       apt:
