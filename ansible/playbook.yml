@@ -4,9 +4,10 @@
   connection: local
   become: yes
   tasks:
-    - name: Clean up broken Jenkins repos (Force Fix)
-      shell: rm -f /etc/apt/sources.list.d/jenkins*.list /etc/apt/sources.list.d/archive_uri-https_pkg_jenkins*.list
-      ignore_errors: yes
+    - name: Force remove old Jenkins repo list
+      file:
+        path: /etc/apt/sources.list.d/jenkins.list
+        state: absent
 
     - name: Install Java
       apt:
@@ -14,20 +15,24 @@
         update_cache: yes
         state: present
 
-    - name: Download Jenkins Key directly
-      shell: wget -q -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    - name: Download Jenkins Key to Global Trusted Folder
+      get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /etc/apt/trusted.gpg.d/jenkins.asc
+        force: yes
 
-    - name: Add Jenkins Repo directly
-      shell: echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" > /etc/apt/sources.list.d/jenkins.list
-
-    - name: Update apt cache manually
-      shell: apt-get update
+    - name: Add Jenkins Repo
+      apt_repository:
+        repo: "deb https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+        update_cache: yes
 
     - name: Install Jenkins and Docker
       apt:
         pkg:
           - jenkins
           - docker.io
+        update_cache: yes
         state: present
 
     - name: Start Jenkins Service
