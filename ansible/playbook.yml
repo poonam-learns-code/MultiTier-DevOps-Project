@@ -1,8 +1,48 @@
 ---
-- name: Setup Jenkins, Docker and Kubernetes
-  hosts: jenkins_server
+- name: Setup Jenkins and Docker
+  hosts: localhost
+  connection: local
   become: yes
   tasks:
-    - name: Update apt repository
+    - name: Install Java
       apt:
+        name: openjdk-17-jre
         update_cache: yes
+        state: present
+
+    - name: Add Jenkins Key
+      get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+
+    - name: Add Jenkins Repo
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+        update_cache: yes
+
+    - name: Install Jenkins and Docker
+      apt:
+        pkg:
+          - jenkins
+          - docker.io
+        update_cache: yes
+        state: present
+
+    - name: Start Jenkins Service
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: Start Docker Service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
