@@ -10,15 +10,23 @@
         update_cache: yes
         state: present
 
-    - name: Add Jenkins Key
-      apt_key:
+    - name: Remove old broken Jenkins repo
+      file:
+        path: /etc/apt/sources.list.d/jenkins.list
+        state: absent
+
+    - name: Download Jenkins Key
+      get_url:
         url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-        state: present
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+        mode: '0644'
+        force: yes
 
     - name: Add Jenkins Repo
       apt_repository:
-        repo: "deb https://pkg.jenkins.io/debian-stable binary/"
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
         state: present
+        filename: jenkins
         update_cache: yes
 
     - name: Install Jenkins and Docker
