@@ -24,14 +24,14 @@ This project demonstrates a complete DevOps lifecycle, including the containeriz
 **2. AWS EC2 Instance Running**
 ![AWS EC2](2_aws_ec2_running.png)
 
-**3. Docker Build & Push Logs**
-![Docker Logs](3_docker_build_push_logs.png)
+**3. Datadog Live Monitoring Dashboard**
+![Datadog Dashboard](3_datadog_monitoring_dashboard.png)
 
-**4. Docker Hub Repository**
-![Docker Hub](4_docker_hub_repo.png)
+**4. Docker Build & Push Logs**
+![Docker Logs](4_docker_build_push_logs.png)
 
-**5. Datadog Live Monitoring Dashboard**
-![Datadog Dashboard](5_datadog_monitoring_dashboard.png)
+**5. Docker Hub Repository**
+![Docker Hub](5_docker_hub_repo.png)
 
 ## 💡 Challenges Solved
 * **Port Conflict Resolution:** Encountered a port binding issue on port `8080`. Successfully troubleshooted and re-mapped the application to port `8081` without application downtime.
